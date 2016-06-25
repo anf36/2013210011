@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #define id_size 20
 #define word_size 100
+#define word_num 100000
 typedef struct Adj{
 	int id;
 	struct Adj* next;
@@ -40,12 +41,13 @@ void Tree_init(Tree* self){
 }
 void Tree_add(Tree* self, Tree* tree){
 	Tree* tree_buf;
-	Tree* stand = (Tree*)(malloc(Tree));
+	Tree* stand;
+	stand = (Tree*)(malloc(sizeof(Tree)));
 	stand = root;
 	while(stand){
 		tree_buf = stand;
 		if(tree->id<stand->id){
-			stand=stand->left;
+			stand = stand->left;
 		}
 		else	stand = stand->right;
 
@@ -67,21 +69,23 @@ typedef struct{
 	Tree super;
 	int count;
 }word_tree;
-void word_tree_init(word_tree* self){
+void word_tree_init(word_tree* self,char* word){
 	Tree_init(&self->super);
 	self->count = 0;
-	self->word ="\0";
-}
-void word_tree_write(word_tree* self, char* word){
 	int i=0;
-	while(*(word) == NULL){
-	self->word[i] = *(word +i);
-	}
+	while(*(word) != NULL){
+		self->word[i] = *(word +i);
+		}
 }
-void word_tree_add(word_tree* self, word_tree* tree){
-	Tree_add(&self->super,&tree->super);
-	tree->count=tree->count +1;
-	tree->word = self->word;
+
+void word_tree_add(word_tree* self, int id){
+	Tree* tree;
+	tree = (Tree*)malloc(sizeof(Tree));
+	Tree_init(tree);
+	tree->id = id;
+	Tree_add(&self->super,tree);
+	self->count = self->count+1;
+
 }
 
 typedef struct{
@@ -124,18 +128,31 @@ int main(){
 		Vertex_add(vertices_friend[self],vertices_friend[friend]);
 		count_friend++;
 	}
+	int word_id;
+	int i=0;
+	char* word;
+	word = (char*)malloc(sizeof(char));
+
+	word_tree* vertices_word;
+	vertices_word = (word_tree*)malloc(sizeof(word_tree));
 	while(fp_word!=NULL){
-		fscanf(fp_word,"%d %s %s %d %s %s %d %s");//id word 蔼 历厘
-		//word vertex 积己 -> id adj 楷搬
+
+		fscanf(fp_word,"%d",&word_id);//id word 蔼 历厘
+		fseek(fp_word,32,1);
+		fscanf(fp_word,"%s",word);
+		word_tree_init(vertices_word+(int)word,word);
+		word_tree_add(vertices_word+(int)word,word_id);
+
+		//word vertex 积己 -> id tree 楷搬
 	}
 	while(fp_user!=NULL){
 		fscanf(fp_user,"%s %s %s %s %s %s %s %s");//id nickname 历厘
 		// id vertex 积己 -> id -> nickname历厘
 
 	}
-	fclose("friend.txt");
-	fclose("user.txt");
-	fclose("word.txt");
+	fclose(fp_user);
+	fclose(fp_friend);
+	fclose(fp_word);
 
-
+	return 0;
 }
