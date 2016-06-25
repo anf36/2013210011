@@ -1,27 +1,66 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define id_size 20
+#define word_size 100
 typedef struct Adj{
 	int id; //key값
 	struct Adj* next;
 } Adj;
-struct Node{
+typedef struct {
 	int id;
-	struct Node *left;
-	struct Node *right;
-};// tree
+	struct Tree *left;
+	struct Tree *right;
+	struct Tree *parent;
+}Tree;// tree
 
-struct Node *root;
-void initTree(int id){
-	struct Node *New;
-	New = (struct Node*)(malloc(sizeof(struct Node)));
-	root = New;
-	root->id =id;
-	New->left =NULL;
-	New->right =NULL;
+Tree *root;
+void Tree_init(Tree* self){
+	self->id =0;
+	root=self;
+	root->left = NULL;
+	root->right = NULL;
+	root->parent =NULL;
 }
-typedef struct word{
+void Tree_add(Tree* self, Tree* tree){
+	Tree* tree_buf;
+	Tree* stand = (Tree*)(malloc(Tree));
+	stand = root;
+	while(stand){
+		tree_buf = stand;
+		if(tree->id<stand->id){
+			stand=stand->left;
+		}
+		else	stand = stand->right;
 
-};
+	}
+	tree->parent = tree_buf;
+	if(tree_buf->parent==NULL){
+		root = tree;
+	}
+	else if(tree->id<tree_buf->id){
+		tree_buf->left = tree;
+	}
+	else tree_buf->right = tree;
+	}
+
+
+}
+typedef struct{
+	char word[word_size];
+	Tree super;
+	int count;
+}word_tree;
+void word_tree_init(word_tree* self){
+	Tree_init(&self->super);
+	self->count = 0;
+	self->word ="\0";
+}
+void initword(){
+
+}// 초기화
+struct word add_word(){
+
+}
 typedef struct{
 	int id; //id number
 	struct Adj* friend;
@@ -31,8 +70,7 @@ typedef struct{
 typedef struct id{
 
 };
-#define id_size 20
-#define word_size 100
+
 
 int main(){
 	FILE* fp_user = NULL;
