@@ -3,7 +3,7 @@
 #define id_size 20
 #define word_size 100
 typedef struct Adj{
-	int id; //key값
+	int id;
 	struct Adj* next;
 } Adj;
 typedef struct {
@@ -12,7 +12,24 @@ typedef struct {
 	struct Tree *right;
 	struct Tree *parent;
 }Tree;// tree
+typedef struct{
 
+	int id;
+	int parent;
+	Adj* first;
+
+}Vertex;
+void Vertex_init(Vertex* self){
+	self->parent=-1;
+	self->id=0;
+	self->first=NULL;
+}
+void Vertex_add(Vertex* self,Vertex* friend){
+	Adj* a=(Adj*)malloc(sizeof(Adj));
+	a->id=friend->id;
+	a->next=self->first;
+	self->first = a;
+}
 Tree *root;
 void Tree_init(Tree* self){
 	self->id =0;
@@ -44,7 +61,7 @@ void Tree_add(Tree* self, Tree* tree){
 	}
 
 
-}
+
 typedef struct{
 	char word[word_size];
 	Tree super;
@@ -55,12 +72,18 @@ void word_tree_init(word_tree* self){
 	self->count = 0;
 	self->word ="\0";
 }
-void initword(){
-
-}// 초기화
-struct word add_word(){
-
+void word_tree_write(word_tree* self, char* word){
+	int i=0;
+	while(*(word) == NULL){
+	self->word[i] = *(word +i);
+	}
 }
+void word_tree_add(word_tree* self, word_tree* tree){
+	Tree_add(&self->super,&tree->super);
+	tree->count=tree->count +1;
+	tree->word = self->word;
+}
+
 typedef struct{
 	int id; //id number
 	struct Adj* friend;
@@ -79,6 +102,7 @@ int main(){
 	int self,friend,count_friend;
 	friends *friend_vertices = NULL;
 	int * friend_buf = NULL;
+	Vertex vertices_friend[1000000000];
 	friend_buf = (int*)malloc(sizeof(int));
 	friend_vertices =(friends*)malloc(sizeof(friends));
 	fp_friend = fopen("friend.txt","r");
@@ -86,7 +110,18 @@ int main(){
 	fp_word = fopen("word.txt","r");
 	while(fp_friend!=NULL){
 		fscanf(fp_friend,"%d %d",&self,&friend);
-		//self -> friend 연결 -> graph 생성
+		if(vertices_friend[self]==NULL){
+			Vertex_init(vertices_friend[self]);
+			vertices_friend[self]->id = self;
+		}
+		if(vertices_friend[friend]==NULL){
+			Vertex_init(vertices_friend[friend]);
+			vertices_friend[friend]->id = friend;
+		}
+
+		vertices_friend[self]->id =self;
+		vertices_friend[friend]->id=friend;
+		Vertex_add(vertices_friend[self],vertices_friend[friend]);
 		count_friend++;
 	}
 	while(fp_word!=NULL){
